@@ -10,9 +10,7 @@ import (
 dagger.#Plan & {
 	actions: {
 		build: {
-			// core.#Source lets you access a file system tree (dagger.#FS)
-			// using a path at "." or deeper (e.g. "./foo" or "./foo/bar") with
-			// optional include/exclude of specific files/directories/globs
+			
 			checkoutCode: core.#Source & {
 				path: "."
 			}
@@ -33,6 +31,42 @@ dagger.#Plan & {
 					# yarn install --frozen-lockfile
 					yarn run build
 					yarn run test
+					"""
+			}
+		}
+	}
+}
+package main
+
+import (
+	"dagger.io/dagger"
+	"dagger.io/dagger/core"
+	"universe.dagger.io/bash"
+	"universe.dagger.io/docker"
+)
+
+dagger.#Plan & {
+	actions: {
+		build: {
+			// core.#Source lets you access a file system tree (dagger.#FS)
+			// using a path at "." or deeper (e.g. "./foo" or "./foo/bar") with
+			// optional include/exclude of specific files/directories/globs
+			checkoutCode: core.#Source & {
+				path: "."
+			}
+			pull: docker.#Pull & {
+				source: "node:lts"
+			}
+			copy: docker.#Copy & {
+				input:    pull.output
+				contents: checkoutCode.output
+			}
+			install: bash.#Run & {
+				input: copy.output
+				script: contents: """
+					npm install
+					npm run build
+					npm run test
 					"""
 			}
 		}
