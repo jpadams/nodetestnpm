@@ -27,6 +27,7 @@ dagger.#Plan & {
 				contents: checkoutCode.output
 			}
 			// Runs a bash script in the input container
+			// in this case npm install (or npm ci, if you prefer)
 			install: bash.#Run & {
 				input: copy.output
 				script: contents: """
@@ -34,6 +35,8 @@ dagger.#Plan & {
 					# npm ci
 					"""
 			}
+			// Runs a bash script in the input container
+			// in this case, scripts in my package.json
 			buildTest: bash.#Run & {
 				input: install.output
 				script: contents: """
