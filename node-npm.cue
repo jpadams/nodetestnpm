@@ -30,6 +30,7 @@ dagger.#Plan & {
 				input: copy.output
 				script: contents: """
 					yarn install
+					# yarn install --frozen-lockfile
 					yarn run build
 					yarn run test
 					"""
