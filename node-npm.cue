@@ -32,6 +32,11 @@ dagger.#Plan & {
 				script: contents: """
 					npm install
 					# npm ci
+					"""
+			}
+			buildTest: bash.#Run & {
+				input: install.output
+				script: contents: """
 					npm run build
 					npm run test
 					"""
