@@ -31,6 +31,7 @@ dagger.#Plan & {
 				input: copy.output
 				script: contents: """
 					npm install
+					# npm ci
 					npm run build
 					npm run test
 					"""
