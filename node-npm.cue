@@ -7,34 +7,26 @@ import (
 	"universe.dagger.io/docker"
 )
 
-_workdir: "/usr/app"
-
 dagger.#Plan & {
 	actions: {
 		build: {
-			checkoutCode: core.#Source & {path: "."}
-			run:          docker.#Build & {
-				steps: [
-					docker.#Pull & {source: "node:lts"},
-					docker.#Copy & {
-						contents: checkoutCode.output
-						dest:     _workdir
-					},
-					docker.#Set & {config: workdir: _workdir},
-					bash.#Run & {
-						script: contents: """
-                            npm install
-                            """
-					},
-					bash.#Run & {
-						always: true
-						script: contents: """
-                            npm install
-                            npm run build
-                            npm run test
-                            """
-					},
-				]
+			checkoutCode: core.#Source & {
+				path: "."
+			}
+			pull: docker.#Pull & {
+				source: "node:lts"
+			}
+			copy: docker.#Copy & {
+				input:    pull.output
+				contents: checkoutCode.output
+			}
+			install: bash.#Run & {
+				input: copy.output
+				script: contents: """
+					yarn install
+					yarn run build
+					yarn run test
+					"""
 			}
 		}
 	}
